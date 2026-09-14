@@ -1,13 +1,15 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Catalog design tokens - ported from eshoponweb-siva:
+     src/Web/wwwroot/css/_variables.scss. The source catalog screen is a
+     fixed light design (no dark mode), so this app doesn't auto-invert
+     colors on prefers-color-scheme either - see
+     docs/02_TO_BE_React_Catalog_LLD.md Section 9. */
+  --color-brand: #00a69c;
+  --color-secondary: #83d01b;
+  --color-secondary-darker: #4d7d0f;
 }
 
 html {
@@ -42,8 +44,6 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+html {
+  color-scheme: light;
 }

@@ -1,0 +1,29 @@
+.wrapper {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1140px;
+  margin: 0 auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.item {
+  cursor: pointer;
+}
+
+.item[aria-disabled="true"] {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.item:hover:not([aria-disabled="true"]) {
+  color: var(--color-secondary);
+}
+
+.status {
+  font-size: 0.9rem;
+}
