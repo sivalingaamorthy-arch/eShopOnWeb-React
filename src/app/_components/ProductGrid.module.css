@@ -1,0 +1,27 @@
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.item {
+  width: 33.333%;
+  margin-bottom: 1.5rem;
+}
+
+@media screen and (max-width: 1024px) {
+  .item {
+    width: 50%;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .item {
+    width: 100%;
+  }
+}
+
+.empty {
+  padding: 2rem 0;
+  text-align: center;
+}

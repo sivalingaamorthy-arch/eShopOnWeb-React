@@ -28,6 +28,12 @@ src/
 
 Don't scaffold `components/`, `hooks/`, or `lib/` ahead of a concrete need — `Copilot.md` §1/§2 explicitly warns against unnecessary abstraction layers, and `components/` specifically is for *proven* reuse (a second consumer), not anticipated reuse. Start new screen-specific code under `app/<route>/_components/`, `app/<route>/` etc., and promote to the shared folders only when something outside that route actually needs it.
 
+**One addition beyond `Copilot.md` §3's taxonomy**: `src/mocks/` holds the dummy catalog data backing `src/app/api/*` (the mock PublicApi stand-in — see below). It's deliberately kept separate from `src/services/`/`src/types/` (the "real" app code) so it's obvious what to delete once a real backend is wired up.
+
+## Mock backend
+
+The app is runnable with no .NET backend: `src/app/api/catalog-items`, `catalog-items/[id]`, `catalog-brands`, `catalog-types` implement the same contract as `PublicApi`'s real endpoints, backed by `src/mocks/catalogSeedData.ts` (transcribed from `eshoponweb-siva`'s actual `CatalogContextSeed.cs` — same products/brands/types/images, not invented data). `src/lib/getApiBaseUrl.ts` picks these automatically unless `NEXT_PUBLIC_API_BASE_URL` is set. When implementing against a real `PublicApi` later, this mock stays as a fallback/dev convenience — don't delete it without checking whether local dev still depends on it.
+
 ## Working in this repo — the app must stay buildable
 
 **Every set of changes must leave `npm run build` (and `npm run lint`) passing.** This is not aspirational — it's enforced two ways:

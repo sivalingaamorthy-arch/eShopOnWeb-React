@@ -1,69 +1,77 @@
-import Image from "next/image";
+import { ITEMS_PER_PAGE } from "@/constants/catalog";
+import { getCatalogBrands, getCatalogTypes, listCatalogItems } from "@/services/catalogApi";
+import { Hero } from "./_components/Hero";
+import { CatalogFilters } from "./_components/CatalogFilters";
+import { Pagination } from "./_components/Pagination";
+import { ProductGrid } from "./_components/ProductGrid";
 import styles from "./page.module.css";
 
-export default function Home() {
+// Required so this route fetches PublicApi (or the mock endpoints under
+// src/app/api/) at request time rather than build time - see
+// docs/02_TO_BE_React_Catalog_LLD.md Section 5.
+export const dynamic = "force-dynamic";
+
+interface CatalogPageProps {
+  searchParams: Promise<{
+    pageId?: string;
+    catalogBrandId?: string;
+    catalogTypeId?: string;
+  }>;
+}
+
+/**
+ * Mirrors eshoponweb-siva:src/Web/Pages/Index.cshtml (IndexModel.OnGet) -
+ * the catalog listing IS the home page, route "/", not "/catalog".
+ * See docs/02_TO_BE_React_Catalog_LLD.md for the full design this
+ * implements.
+ */
+export default async function CatalogPage({ searchParams }: CatalogPageProps) {
+  const params = await searchParams;
+
+  const pageIndex = params.pageId ? Number(params.pageId) : 0;
+  const catalogBrandId = params.catalogBrandId ? Number(params.catalogBrandId) : undefined;
+  const catalogTypeId = params.catalogTypeId ? Number(params.catalogTypeId) : undefined;
+
+  const [itemsResponse, brandsResponse, typesResponse] = await Promise.all([
+    listCatalogItems({ pageSize: ITEMS_PER_PAGE, pageIndex, catalogBrandId, catalogTypeId }),
+    getCatalogBrands(),
+    getCatalogTypes(),
+  ]);
+
+  const { catalogItems, pageCount, totalItems } = itemsResponse;
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>
-            To get started, edit the{" "}
-            <code className={styles.code}>page.tsx</code> file.
-          </h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <>
+      <Hero />
+      <CatalogFilters
+        brands={brandsResponse.catalogBrands}
+        types={typesResponse.catalogTypes}
+        selectedBrandId={catalogBrandId}
+        selectedTypeId={catalogTypeId}
+      />
+      <div className={styles.container}>
+        {catalogItems.length > 0 && (
+          <Pagination
+            pageIndex={pageIndex}
+            totalPages={pageCount}
+            itemsShown={catalogItems.length}
+            totalItems={totalItems}
+            catalogBrandId={catalogBrandId}
+            catalogTypeId={catalogTypeId}
+          />
+        )}
+        <ProductGrid items={catalogItems} />
+        {catalogItems.length > 0 && (
+          <Pagination
+            pageIndex={pageIndex}
+            totalPages={pageCount}
+            itemsShown={catalogItems.length}
+            totalItems={totalItems}
+            catalogBrandId={catalogBrandId}
+            catalogTypeId={catalogTypeId}
+          />
+        )}
+      </div>
+    </>
   );
 }

@@ -1,0 +1,21 @@
+.hero {
+  background-image: url("/images/main_banner.png");
+  background-size: cover;
+  background-position: center;
+  height: 260px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.inner {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  width: 100%;
+}
+
+.title {
+  max-width: 320px;
+  width: 60%;
+}
