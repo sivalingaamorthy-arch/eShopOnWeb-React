@@ -7,8 +7,26 @@ This is the React (Next.js) frontend for the eShopOnWeb catalog modernization. I
 ## Authoritative sources (read these before implementing a screen)
 
 1. **AS-IS behavior / API contract**: `eshoponweb-siva` repo, `docs/as_is_lld/as_is_lld_catalog.md` — the verified, source-traced description of what the current system does and the exact `PublicApi` request/response shapes this app must integrate against. This is the current source of truth; an older file this repo's `to_be_react_instruction.md` refers to (`01_AS_IS_MVC_Catalog_LLD.md` at the eshoponweb-siva repo root) has been removed as superseded — treat the LLD path above as authoritative instead.
-2. **Target React design**: `docs/02_TO_BE_React_Catalog_LLD.md` in *this* repo — referenced by `to_be_react_instruction.md` but **not yet written**. Until it exists, do not invent catalog screen design decisions (routing shape, component breakdown, state approach) beyond what's needed for the scaffold itself — ask, or keep changes to infrastructure/tooling only.
+2. **Target React design**: `docs/02_TO_BE_React_Catalog_LLD.md` in *this* repo — the design doc `to_be_react_instruction.md` names as the source of truth for the catalog screen. Read it before writing catalog feature code; don't invent routing/component/state decisions it doesn't cover.
 3. **Engineering conventions**: `Copilot.md` (generic React/TypeScript engineering guidelines) and `to_be_react_instruction.md` (POC-specific scope and process rules) at the repo root — these apply to Claude the same as they do to Copilot. Read them before writing feature code.
+
+## Target architecture
+
+`Copilot.md` §3 is the architecture authority for this repo (pages / components / services / data-access / types / hooks / constants / utilities, co-located until reuse is proven — see that file for the full rules). `docs/02_TO_BE_React_Catalog_LLD.md` §4 maps those categories onto the catalog screen's concrete folders; the same shape applies to any new screen added later:
+
+```
+src/
+├── app/                 # "pages" — Next.js App Router route segments
+│   └── <route>/_components/   # screen-local components, co-located
+├── components/           # shared/cross-page components — only once 2+ screens need one
+├── services/              # "services, data-access" — PublicApi client functions
+├── types/                 # API/domain TypeScript types
+├── hooks/                 # client-side state, only when a screen actually needs it
+├── constants/              # e.g. ITEMS_PER_PAGE
+└── lib/                    # small cross-cutting utilities, only when one is needed
+```
+
+Don't scaffold `components/`, `hooks/`, or `lib/` ahead of a concrete need — `Copilot.md` §1/§2 explicitly warns against unnecessary abstraction layers, and `components/` specifically is for *proven* reuse (a second consumer), not anticipated reuse. Start new screen-specific code under `app/<route>/_components/`, `app/<route>/` etc., and promote to the shared folders only when something outside that route actually needs it.
 
 ## Working in this repo — the app must stay buildable
 
